@@ -1,0 +1,31 @@
+{
+  "name": "kakuilan/swooletest",
+  "description": "my swoole test",
+  "keywords": [
+    "swoole"
+  ],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "kakuilan",
+      "email": "kakuilan@163.com"
+    }
+  ],
+  "require": {
+    "monolog/monolog": "^1.22",
+    "phpunit/phpunit": "^6.1"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Kswoole\\": "src"
+    }
+  },
+  "repositories": {
+    "packagist": {
+      "type": "composer",
+      "url": "https://packagist.phpcomposer.com"
+    }
+  }
+}
