@@ -16,6 +16,7 @@
     "phpunit/phpunit": "^6.1"
   },
   "require-dev": {
+    "kakuilan/kphplib": "dev-master"
   },
   "autoload": {
     "psr-4": {
