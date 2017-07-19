@@ -67,7 +67,7 @@ class SwooleServer extends LkkService{
 
             //主服务
             'main_server' => [
-                'host' => '127.0.0.1',
+                'host' => '0.0.0.0',
                 'port' => 6666,
                 'mode' => SWOOLE_PROCESS,
                 'sock_type' => SWOOLE_SOCK_TCP,
@@ -75,7 +75,7 @@ class SwooleServer extends LkkService{
 
             //子服务,跑长连接或推送等
             'sub_server' => [
-                'host' => '127.0.0.1',
+                'host' => '0.0.0.0',
                 'port' => 6667,
                 'mode' => null, //SWOOLE_PROCESS,
                 'sock_type' => null, //SWOOLE_SOCK_TCP,
