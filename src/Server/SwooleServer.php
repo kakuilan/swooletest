@@ -102,14 +102,14 @@ class SwooleServer extends LkkService{
 
 
     /**
-     * 内部调用
+     * 当启动时
      */
     public function onStart() {
         $server = self::getServer();
         //TODO
-        echo "start\r\n";
+        echo "Start\r\n";
 
-        $this->events[__FUNCTION__]();
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
@@ -123,156 +123,248 @@ class SwooleServer extends LkkService{
     }
 
 
+    /**
+     * 当关掉时
+     */
     public function onShutdown() {
+        $server = self::getServer();
+        //TODO
+        echo "Shutdown\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addShutdownEvent() {
-        
+    /**
+     * 添加关掉时外部事件
+     * @param callable $func
+     */
+    public function addShutdownEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onWorkerStart() {
+        $server = self::getServer();
+        //TODO
+        echo "WorkerStart\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addWorkerStartEvent() {
-
+    public function addWorkerStartEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onWorkerStop() {
+        $server = self::getServer();
+        //TODO
+        echo "WorkerStop\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addWorkerStopEvent() {
-
+    public function addWorkerStopEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onTimer() {
+        $server = self::getServer();
+        //TODO
+        echo "Timer\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addTimerEvent() {
-
+    public function addTimerEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onConnect() {
+        $server = self::getServer();
+        //TODO
+        echo "onConnect\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addConnectEvent() {
-
+    public function addConnectEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onReceive() {
+        $server = self::getServer();
+        //TODO
+        echo "onReceive\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addReceiveEvent() {
-
+    public function addReceiveEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onPacket() {
+        $server = self::getServer();
+        //TODO
+        echo "onPacket\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addPacketEvent() {
-
+    public function addPacketEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onClose() {
+        $server = self::getServer();
+        //TODO
+        echo "onClose\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addCloseEvent() {
-
+    public function addCloseEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onTask() {
+        $server = self::getServer();
+        //TODO
+        echo "onTask\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addTaskEvent() {
-
+    public function addTaskEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onFinish() {
+        $server = self::getServer();
+        //TODO
+        echo "onFinish\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addFinishEvent() {
-
+    public function addFinishEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onPipeMessage() {
+        $server = self::getServer();
+        //TODO
+        echo "onPipeMessage\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addPipeMessageEvent() {
-
+    public function addPipeMessageEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onWorkerError() {
+        $server = self::getServer();
+        //TODO
+        echo "onWorkerError\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addWorkerErrorEvent() {
-
+    public function addWorkerErrorEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onManagerStart() {
+        $server = self::getServer();
+        //TODO
+        echo "onManagerStart\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addManagerStartEvent() {
-
+    public function addManagerStartEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
     public function onManagerStop() {
+        $server = self::getServer();
+        //TODO
+        echo "onManagerStop\r\n";
 
+        if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
     }
 
 
-    public function addManagerStopEvent() {
-
+    public function addManagerStopEvent(callable $func) {
+        $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
+        $this->events[$eveName] = $func;
     }
 
 
+    /**
+     * 绑定事件
+     */
     public function bindEvents() {
         $this->server->on('Start', [$this, 'onStart']);
-
-
+        $this->server->on('Shutdown', [$this, 'onShutdown']);
+        $this->server->on('WorkerStart', [$this, 'onWorkerStart']);
+        $this->server->on('WorkerStop', [$this, 'onWorkerStop']);
+        $this->server->on('Timer', [$this, 'onTimer']);
+        $this->server->on('Connect', [$this, 'onConnect']);
+        $this->server->on('Receive', [$this, 'onReceive']);
+        $this->server->on('Packet', [$this, 'onPacket']);
+        $this->server->on('Close', [$this, 'onClose']);
+        $this->server->on('Task', [$this, 'onTask']);
+        $this->server->on('Finish', [$this, 'onFinish']);
+        $this->server->on('PipeMessage', [$this, 'onPipeMessage']);
+        $this->server->on('WorkerError', [$this, 'onWorkerError']);
+        $this->server->on('ManagerStart', [$this, 'onManagerStart']);
+        $this->server->on('ManagerStop', [$this, 'onManagerStop']);
     }
 
 
     public function start() {
         $this->bindEvents();
-
+        $this->server->start();
     }
 
 

@@ -16,7 +16,7 @@ $loader->addPsr4('Apps\\', APPSDIR);
 
 $serverService = \Kswoole\Server\SwooleServer::instance();
 $serverService->addStartEvent(function (){
-    echo 6666;
+    echo "outside event : 6666\r\n";
 });
-$serverService->onStart();
+$serverService->start();
 
