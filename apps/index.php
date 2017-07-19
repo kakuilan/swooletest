@@ -15,8 +15,7 @@ $loader = require __DIR__ . '/../vendor/autoload.php';
 $loader->addPsr4('Apps\\', APPSDIR);
 
 $serverService = \Kswoole\Server\SwooleServer::instance();
-$serverService->addStartEvent(function (){
+$serverService->init()->addStartEvent(function (){
     echo "outside event : 6666\r\n";
-});
-$serverService->start();
+})->start();
 

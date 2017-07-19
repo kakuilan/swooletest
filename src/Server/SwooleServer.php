@@ -87,7 +87,7 @@ class SwooleServer extends LkkService{
 
     /**
      * 初始化
-     * @return \swoole_server
+     * @return $this
      */
     public function init() {
         $mainCnf = $this->conf['main_server'];
@@ -97,7 +97,7 @@ class SwooleServer extends LkkService{
             $this->server->addlistener($subCnf['host'], $subCnf['port'], $subCnf['mode'], $subCnf['sock_type']);
         }
 
-        return $this->server;
+        return $this;
     }
 
 
@@ -110,6 +110,8 @@ class SwooleServer extends LkkService{
         echo "Start\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
@@ -120,6 +122,8 @@ class SwooleServer extends LkkService{
     public function addStartEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -132,6 +136,8 @@ class SwooleServer extends LkkService{
         echo "Shutdown\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
@@ -142,6 +148,8 @@ class SwooleServer extends LkkService{
     public function addShutdownEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -151,12 +159,16 @@ class SwooleServer extends LkkService{
         echo "WorkerStart\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addWorkerStartEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -166,12 +178,16 @@ class SwooleServer extends LkkService{
         echo "WorkerStop\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addWorkerStopEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -181,12 +197,16 @@ class SwooleServer extends LkkService{
         echo "Timer\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addTimerEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -196,12 +216,16 @@ class SwooleServer extends LkkService{
         echo "onConnect\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addConnectEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -211,12 +235,16 @@ class SwooleServer extends LkkService{
         echo "onReceive\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addReceiveEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -226,12 +254,16 @@ class SwooleServer extends LkkService{
         echo "onPacket\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addPacketEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -241,12 +273,16 @@ class SwooleServer extends LkkService{
         echo "onClose\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addCloseEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -256,12 +292,16 @@ class SwooleServer extends LkkService{
         echo "onTask\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addTaskEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -271,12 +311,16 @@ class SwooleServer extends LkkService{
         echo "onFinish\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addFinishEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -286,12 +330,16 @@ class SwooleServer extends LkkService{
         echo "onPipeMessage\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addPipeMessageEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -301,12 +349,16 @@ class SwooleServer extends LkkService{
         echo "onWorkerError\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addWorkerErrorEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -316,12 +368,16 @@ class SwooleServer extends LkkService{
         echo "onManagerStart\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addManagerStartEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -331,12 +387,16 @@ class SwooleServer extends LkkService{
         echo "onManagerStop\r\n";
 
         if(isset($this->events[__FUNCTION__])) $this->events[__FUNCTION__]();
+
+        return $this;
     }
 
 
     public function addManagerStopEvent(callable $func) {
         $eveName = str_ireplace(['add','Event'], ['on',''], __FUNCTION__);
         $this->events[$eveName] = $func;
+
+        return $this;
     }
 
 
@@ -359,12 +419,16 @@ class SwooleServer extends LkkService{
         $this->server->on('WorkerError', [$this, 'onWorkerError']);
         $this->server->on('ManagerStart', [$this, 'onManagerStart']);
         $this->server->on('ManagerStop', [$this, 'onManagerStop']);
+
+        return $this;
     }
 
 
     public function start() {
         $this->bindEvents();
         $this->server->start();
+
+        return $this;
     }
 
 
