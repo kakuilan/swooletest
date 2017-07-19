@@ -13,3 +13,10 @@ require __DIR__ . './errlog.php';
 //载入命名空间
 $loader = require __DIR__ . '/../vendor/autoload.php';
 $loader->addPsr4('Apps\\', APPSDIR);
+
+$serverService = \Kswoole\Server\SwooleServer::instance();
+$serverService->addStartEvent(function (){
+    echo 6666;
+});
+$serverService->onStart();
+
