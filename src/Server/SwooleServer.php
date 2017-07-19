@@ -77,8 +77,7 @@ class SwooleServer extends LkkService{
             'sub_server' => [
                 'host' => '0.0.0.0',
                 'port' => 6667,
-                'mode' => null, //SWOOLE_PROCESS,
-                'sock_type' => null, //SWOOLE_SOCK_TCP,
+                'sock_type' => SWOOLE_SOCK_TCP,
             ],
 
         ];
@@ -94,7 +93,7 @@ class SwooleServer extends LkkService{
         $subCnf = $this->conf['sub_server'];
         $this->server = new \swoole_server($mainCnf['host'], $mainCnf['port'], $mainCnf['mode'], $mainCnf['sock_type']);
         if(!empty($subCnf)) {
-            $this->server->addlistener($subCnf['host'], $subCnf['port'], $subCnf['mode'], $subCnf['sock_type']);
+            $this->server->addListener($subCnf['host'], $subCnf['port'], $subCnf['sock_type']);
         }
 
         return $this;
@@ -408,7 +407,7 @@ class SwooleServer extends LkkService{
         $this->server->on('Shutdown', [$this, 'onShutdown']);
         $this->server->on('WorkerStart', [$this, 'onWorkerStart']);
         $this->server->on('WorkerStop', [$this, 'onWorkerStop']);
-        $this->server->on('Timer', [$this, 'onTimer']);
+        $this->server->on('timer', [$this, 'onTimer']);
         $this->server->on('Connect', [$this, 'onConnect']);
         $this->server->on('Receive', [$this, 'onReceive']);
         $this->server->on('Packet', [$this, 'onPacket']);
