@@ -162,13 +162,15 @@ class SwooleServer extends LkkService{
         //TODO
         echo "onRequest:\r\n";
 
-        var_dump($request);
+        //var_dump($request);
         $date = date('Y-m-d H:i:s');
-        var_dump(',------------------------------,', $date, $_GET, $_POST);
+        $uniqid = uniqid('', true);
+        var_dump(',------------------------------,', $date, $uniqid, $_GET, $_POST);
         $_POST['date'] = $date;
-
+        $_POST['uniqid'] = $uniqid;
+        
         $response->end('hello world');
-
+        unset($_POST);
     }
 
 
@@ -316,6 +318,34 @@ class SwooleServer extends LkkService{
     }
 
 
+
+    /**
+     * 将原始请求信息转换到PHP超全局变量中
+     */
+    function setGlobal()
+    {
+        if ($this->get) $_GET = $this->get;
+        if ($this->post) $_POST = $this->post;
+        if ($this->file) $_FILES = $this->file;
+        if ($this->cookie) $_COOKIE = $this->cookie;
+        if ($this->server) $_SERVER = $this->server;
+        $_REQUEST = array_merge($this->get, $this->post, $this->cookie);
+
+        $_SERVER['REQUEST_URI'] = $this->meta['uri'];
+        /**
+         * 将HTTP头信息赋值给$_SERVER超全局变量
+         */
+        foreach ($this->head as $key => $value) {
+            $_key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
+            $_SERVER[$_key] = $value;
+        }
+        $_SERVER['REMOTE_ADDR'] = $this->remote_ip;
+    }
+
+    function unsetGlobal()
+    {
+        $_REQUEST = $_SESSION = $_COOKIE = $_FILES = $_POST = $_SERVER = $_GET = array();
+    }
 
 
 }
