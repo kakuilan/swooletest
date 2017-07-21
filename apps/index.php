@@ -18,6 +18,6 @@ $serverService = \Kswoole\Server\SwooleServer::instance();
 /*$serverService->init()->addStartEvent(function (){
     echo "outside event : 6666\r\n";
 })->start();*/
-$serverService->init()->addEvent('onStart', function ($name, $age){
+$serverService->initServer()->addEvent('onStart', function ($name, $age){
     echo "outside event : {$name}-{$age}\r\n";
 }, ['name'=>'lkk','age'=>18])->start();
