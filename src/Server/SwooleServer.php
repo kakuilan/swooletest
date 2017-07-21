@@ -168,9 +168,9 @@ class SwooleServer extends LkkService{
         var_dump(',------------------------------,', $date, $uniqid, $_GET, $_POST);
         $_POST['date'] = $date;
         $_POST['uniqid'] = $uniqid;
-        
+
         $response->end('hello world');
-        unset($_POST);
+        $_POST = [];
     }
 
 
