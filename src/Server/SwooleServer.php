@@ -19,7 +19,7 @@ class SwooleServer extends LkkService{
     private $server;
     private $events;
 
-    
+
     /**
      * 构造函数
      * SwooleServer constructor.
@@ -178,8 +178,8 @@ class SwooleServer extends LkkService{
             call_user_func_array($extEvent['func'], $extEvent['parm']);
         }
 
-        $length = unpack('N', $data)[1];
-        $data = unserialize(substr($data, -$length));
+        /*$length = unpack('N', $data)[1];
+        $data = unserialize(substr($data, -$length));*/
         var_dump($data);
 
         $chunk = $response = '11111111111';
