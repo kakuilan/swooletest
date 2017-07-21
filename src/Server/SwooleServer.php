@@ -52,19 +52,12 @@ class SwooleServer extends LkkService{
             'server_name' => 'Kserver',
 
             //主服务
-            'main_server' => [
+            'http_server' => [
                 'host' => '0.0.0.0',
                 'port' => 6666,
-                'mode' => SWOOLE_PROCESS,
-                'sock_type' => SWOOLE_SOCK_TCP,
             ],
 
-            //子服务,跑长连接或推送等
-            'sub_server' => [
-                'host' => '0.0.0.0',
-                'port' => 6667,
-                'sock_type' => SWOOLE_SOCK_TCP,
-            ],
+
 
         ];
     }
@@ -74,16 +67,13 @@ class SwooleServer extends LkkService{
      * 初始化
      * @return $this
      */
-    public function init() {
-        $mainCnf = $this->conf['main_server'];
-        $subCnf = $this->conf['sub_server'];
-        $this->server = new \swoole_server($mainCnf['host'], $mainCnf['port'], $mainCnf['mode'], $mainCnf['sock_type']);
-        if(!empty($subCnf)) {
-            $this->server->addListener($subCnf['host'], $subCnf['port'], $subCnf['sock_type']);
-        }
+    public function initServer() {
+        $httpCnf = $this->conf['http_server'];
+        $this->server = new \swoole_http_server($httpCnf['host'], $httpCnf['port']);
 
         return $this;
     }
+
 
 
     /**
@@ -168,45 +158,13 @@ class SwooleServer extends LkkService{
     }
 
 
-
-    public function onReceive($serv, $fd, $fromId, $data) {
+    public function onRequest($request, $response) {
         //TODO
-        echo "onReceive:{$fromId}\r\n";
+        echo "onRequest:\r\n";
 
-        $extEvent = $this->getExtEvent(__FUNCTION__);
-        if($extEvent) {
-            call_user_func_array($extEvent['func'], $extEvent['parm']);
-        }
+        $response->end('hello world');
 
-        /*$length = unpack('N', $data)[1];
-        $data = unserialize(substr($data, -$length));*/
-        var_dump($data);
-
-        $chunk = $response = '11111111111';
-
-        ob_start();
-        $serv->send($fd, pack('N', strlen($chunk)), $fromId);
-        $serv->send($fd, $chunk, $fromId);
-        ob_end_clean();
-        $serv->close($fd);
-
-        return $this;
     }
-
-
-
-    public function onPacket($serv, $data, $clientInfo) {
-        //TODO
-        echo "onPacket\r\n";
-
-        $extEvent = $this->getExtEvent(__FUNCTION__);
-        if($extEvent) {
-            call_user_func_array($extEvent['func'], $extEvent['parm']);
-        }
-
-        return $this;
-    }
-
 
 
     public function onClose($serv, $fd, $fromId) {
