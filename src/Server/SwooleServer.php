@@ -185,11 +185,10 @@ class SwooleServer extends LkkService{
         $chunk = $response = '11111111111';
 
         ob_start();
-
         $serv->send($fd, pack('N', strlen($chunk)), $fromId);
         $serv->send($fd, $chunk, $fromId);
-        
         ob_end_clean();
+        $serv->close($fd);
 
         return $this;
     }
