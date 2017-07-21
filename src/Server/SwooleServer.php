@@ -162,6 +162,8 @@ class SwooleServer extends LkkService{
         //TODO
         echo "onRequest:\r\n";
 
+        var_dump($request);
+
         $response->end('hello world');
 
     }
