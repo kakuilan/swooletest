@@ -18,9 +18,8 @@ class SwooleServer extends LkkService{
     public $conf;
     private $server;
     private $events;
-    private static $instance;
 
-
+    
     /**
      * 构造函数
      * SwooleServer constructor.
