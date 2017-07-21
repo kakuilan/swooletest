@@ -163,8 +163,9 @@ class SwooleServer extends LkkService{
         echo "onRequest:\r\n";
 
         var_dump($request);
-        var_dump(',------------------------------,', $_GET, $_POST);
-        $_POST['date'] = date('Y-m-d H:i:s');
+        $date = date('Y-m-d H:i:s');
+        var_dump(',------------------------------,', $date, $_GET, $_POST);
+        $_POST['date'] = $date;
 
         $response->end('hello world');
 
