@@ -290,8 +290,7 @@ class SwooleServer extends LkkService{
         $this->server->on('WorkerStart', [$this, 'onWorkerStart']);
         $this->server->on('WorkerStop', [$this, 'onWorkerStop']);
         $this->server->on('Connect', [$this, 'onConnect']);
-        $this->server->on('Receive', [$this, 'onReceive']);
-        $this->server->on('Packet', [$this, 'onPacket']);
+        $this->server->on('Request', [$this, 'onRequest']);
         $this->server->on('Close', [$this, 'onClose']);
         $this->server->on('Task', [$this, 'onTask']);
         $this->server->on('Finish', [$this, 'onFinish']);
