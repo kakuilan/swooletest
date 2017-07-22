@@ -28,8 +28,6 @@ class SwooleServer extends LkkService{
     public function __construct(array $vars = []) {
         parent::__construct($vars);
 
-        $this->conf = self::getConf();
-
     }
 
 
@@ -44,23 +42,13 @@ class SwooleServer extends LkkService{
 
 
     /**
-     * 获取配置
-     * @return array
+     * 设置配置
+     * @param array $conf
      */
-    public static function getConf() {
-        return [
-            'server_name' => 'Kserver',
-
-            //主服务
-            'http_server' => [
-                'host' => '0.0.0.0',
-                'port' => 6666,
-            ],
-
-
-
-        ];
+    public function setConf(array $conf) {
+        $this->conf = $conf;
     }
+
 
 
     /**
@@ -71,6 +59,8 @@ class SwooleServer extends LkkService{
         $httpCnf = $this->conf['http_server'];
         $this->server = new \swoole_http_server($httpCnf['host'], $httpCnf['port']);
 
+        $servCnf = $this->conf['server_conf'];
+        $this->server->set($servCnf);
         return $this;
     }
 
