@@ -47,6 +47,7 @@ class SwooleServer extends LkkService{
      */
     public function setConf(array $conf) {
         $this->conf = $conf;
+        return $this;
     }
 
 
