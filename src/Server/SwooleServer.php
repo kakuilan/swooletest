@@ -377,7 +377,7 @@ class SwooleServer extends LkkService{
         //构造url请求路径,phalcon获取到$_GET['_url']时会定向到对应的路径，否则请求路径为'/'
         $_GET['_url'] = $request->server['request_uri'];
 
-        $_REQUEST = array_merge($request->get, $request->post, $request->cookie);
+        $_REQUEST = array_merge($_GET, $_POST);
 
         //todo: necessary?
         foreach ($_SERVER as $key => $value) {
@@ -389,7 +389,7 @@ class SwooleServer extends LkkService{
         $_SERVER['REQUEST_URI'] = $request->server['request_uri'];
 
         //将HTTP头信息赋值给$_SERVER超全局变量
-        foreach ($request->head as $key => $value) {
+        foreach ($request->header as $key => $value) {
             $_key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
             $_SERVER[$_key] = $value;
         }
