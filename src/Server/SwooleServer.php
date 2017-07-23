@@ -163,7 +163,7 @@ class SwooleServer extends LkkService{
 
         $this->setGlobal($request);
 
-        $requestMd5 = md5(serialize($request));
+        $requestMd5 = self::getRequestUuid();
         $GLOBALS[$requestMd5] = microtime(true);
         var_dump($requestMd5, $request);
 
@@ -182,6 +182,15 @@ class SwooleServer extends LkkService{
 
         $response->end('hello world');
         unset($GLOBALS[$requestMd5]);
+    }
+
+
+    //获取请求的UUID
+    public static function getRequestUuid() {
+        $arr = array_merge($_GET, $_COOKIE, $_SERVER);
+        sort($arr);
+        $res = md5(serialize($arr));
+        return $res;
     }
 
 
