@@ -83,7 +83,8 @@ class SwooleServer extends LkkService{
      */
     public function onStart($serv) {
         //TODO
-        echo "Start\r\n";
+        $modName = php_sapi_name();
+        echo "Start:{$modName}\r\n";
 
         $extEvent = $this->getExtEvent(__FUNCTION__);
         if($extEvent) {
@@ -151,7 +152,8 @@ class SwooleServer extends LkkService{
 
     public function onRequest($request, $response) {
         //TODO
-        echo "onRequest:\r\n";
+        $modName = php_sapi_name();
+        echo "onRequest:{$modName}\r\n";
 
         //var_dump($request);
         $date = date('Y-m-d H:i:s');
@@ -308,7 +310,8 @@ class SwooleServer extends LkkService{
     }
 
 
-    public function start() {
+    //启动服务
+    public function startServer() {
         $this->bindEvents();
         $this->server->start();
 
@@ -316,33 +319,63 @@ class SwooleServer extends LkkService{
     }
 
 
+    //关闭服务
+    public function shutdownServer() {
+        //重启所有worker进程
+        $this->server->shutdown();
+        return $this;
+    }
+
+
+    public function stopWorker() {
+        //使当前worker进程停止运行
+        $this->server->stop();
+        return $this;
+    }
+
+
+    public function reloadWorkers() {
+        $this->server->reload();
+        return $this;
+    }
+
+
+
+
+
 
     /**
      * 将原始请求信息转换到PHP超全局变量中
      */
-    function setGlobal()
-    {
-        if ($this->get) $_GET = $this->get;
-        if ($this->post) $_POST = $this->post;
-        if ($this->file) $_FILES = $this->file;
-        if ($this->cookie) $_COOKIE = $this->cookie;
-        if ($this->server) $_SERVER = $this->server;
-        $_REQUEST = array_merge($this->get, $this->post, $this->cookie);
+    public function setGlobal($request) {
+        $_GET = $_POST = $_REQUEST = $_SERVER = $_COOKIE = $_FILES = [];
 
-        $_SERVER['REQUEST_URI'] = $this->meta['uri'];
+        if ($request->get) $_GET = $request->get;
+        if ($request->post) $_POST = $request->post;
+        if ($request->file) $_FILES = $request->file;
+        if ($request->cookie) $_COOKIE = $request->cookie;
+        if ($request->server) $_SERVER = $request->server;
+
+        //构造url请求路径,phalcon获取到$_GET['_url']时会定向到对应的路径，否则请求路径为'/'
+        $_GET['_url'] = $request->server['request_uri'];
+
+        $_REQUEST = array_merge($request->get, $request->post, $request->cookie);
+        $_SERVER['REQUEST_URI'] = $request->meta['uri'];
+
+
         /**
          * 将HTTP头信息赋值给$_SERVER超全局变量
          */
-        foreach ($this->head as $key => $value) {
+        foreach ($request->head as $key => $value) {
             $_key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
             $_SERVER[$_key] = $value;
         }
-        $_SERVER['REMOTE_ADDR'] = $this->remote_ip;
+        $_SERVER['REMOTE_ADDR'] = $request->remote_ip;
     }
 
-    function unsetGlobal()
-    {
-        $_REQUEST = $_SESSION = $_COOKIE = $_FILES = $_POST = $_SERVER = $_GET = array();
+
+    public function unsetGlobal() {
+        $_REQUEST = $_SESSION = $_COOKIE = $_FILES = $_POST = $_SERVER = $_GET = [];
     }
 
 
