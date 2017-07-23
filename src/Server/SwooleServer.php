@@ -393,8 +393,7 @@ class SwooleServer extends LkkService{
             $_key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
             $_SERVER[$_key] = $value;
         }
-        //$_SERVER['REMOTE_ADDR'] = $request->server['remote_addr'];
-        $_SERVER['REMOTE_ADDR'] = $request->remote_ip;
+        $_SERVER['REMOTE_ADDR'] = $request->server['remote_addr'];
 
         // swoole fix 初始化一些变量, 下面这些变量在进入真实流程时是无效的
         $_SERVER['PHP_SELF']        = '/index.php';
