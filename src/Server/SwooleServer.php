@@ -18,6 +18,7 @@ class SwooleServer extends LkkService{
     public $conf;
     private $server;
     private $events;
+    private $requests;
 
 
     /**
@@ -37,8 +38,32 @@ class SwooleServer extends LkkService{
      * @return mixed
      */
     public static function getServer() {
-        return is_null(self::$instance) ? null : self::$instance->server;
+        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->server;
     }
+
+
+    private function setSwooleRequest($request) {
+        $reqUuid = self::getRequestUuid();
+        $this->requests[$reqUuid] = $request;
+    }
+
+
+    private function unsetSwooleRequest($reqUuid='') {
+        if(empty($reqUuid)) $reqUuid = self::getRequestUuid();
+        unset($this->requests[$reqUuid]);
+    }
+
+
+    public static function getSwooleRequest($reqUuid='') {
+        $res = null;
+        if(is_object(self::$instance) && !empty(self::$instance)) {
+            if(empty($reqUuid)) $reqUuid = self::getRequestUuid();
+            $res = isset(self::$instance->requests[$reqUuid]) ? self::$instance->requests[$reqUuid] : null;
+        }
+
+        return $res;
+    }
+
 
 
     /**
