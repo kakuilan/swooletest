@@ -155,22 +155,40 @@ class SwooleServer extends LkkService{
         $modName = php_sapi_name();
         echo "onRequest:{$modName}\r\n";
 
+        if ($request->server['request_uri'] == '/favicon.ico' || $request->server['path_info'] == '/favicon.ico') {
+            return $response->end();
+        }elseif (preg_match('/(.css|.js|.gif|.png|.jpg|.jpeg|.ttf|.woff|.ico)$/i', $request->server['request_uri']) === 1) {
+            return $response->end();
+        }
+
+        $this->setGlobal($request);
+
+        $requestMd5 = md5(serialize($request));
+        $GLOBALS[$requestMd5] = microtime(true);
+        var_dump($requestMd5, $request);
+
+
         //var_dump($request);
         $date = date('Y-m-d H:i:s');
         $uniqid = uniqid('', true);
         //var_dump(',------------------------------,', $date, $uniqid, $_POST);
         $_POST['date'] = $date;
         $_POST['uniqid'] = $uniqid;
-        usleep(1000);
 
         //var_dump('==========================:', $date, $uniqid, $_POST);
         if(!isset($_POST['uniqid']) || $uniqid != $_POST['uniqid']) {
             var_dump('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', $date, $uniqid, $_POST);
         }
 
-
         $response->end('hello world');
-        $_POST = [];
+        unset($GLOBALS[$requestMd5]);
+    }
+
+
+    public function afterResponse($request, $response) {
+        $this->unsetGlobal();
+        unset($request);
+        unset($response);
     }
 
 
@@ -348,29 +366,47 @@ class SwooleServer extends LkkService{
      * 将原始请求信息转换到PHP超全局变量中
      */
     public function setGlobal($request) {
-        $_GET = $_POST = $_REQUEST = $_SERVER = $_COOKIE = $_FILES = [];
+        $_REQUEST = $_SESSION = $_COOKIE = $_FILES = $_POST = $_SERVER = $_GET = [];
 
-        if ($request->get) $_GET = $request->get;
-        if ($request->post) $_POST = $request->post;
-        if ($request->file) $_FILES = $request->file;
-        if ($request->cookie) $_COOKIE = $request->cookie;
-        if ($request->server) $_SERVER = $request->server;
+        if (isset($request->get)) $_GET = $request->get;
+        if (isset($request->post)) $_POST = $request->post;
+        if (isset($request->files)) $_FILES = $request->files;
+        if (isset($request->cookie)) $_COOKIE = $request->cookie;
+        if (isset($request->server)) $_SERVER = $request->server;
 
         //构造url请求路径,phalcon获取到$_GET['_url']时会定向到对应的路径，否则请求路径为'/'
         $_GET['_url'] = $request->server['request_uri'];
 
         $_REQUEST = array_merge($request->get, $request->post, $request->cookie);
-        $_SERVER['REQUEST_URI'] = $request->meta['uri'];
 
+        //todo: necessary?
+        foreach ($_SERVER as $key => $value) {
+            $_SERVER[strtoupper($key)] = $value;
+            unset($_SERVER[$key]);
+        }
+        $_REQUEST = array_merge($_GET, $_POST, $_COOKIE);
+        //$_SERVER['REQUEST_URI'] = $request->meta['uri'];
+        $_SERVER['REQUEST_URI'] = $request->server['request_uri'];
 
-        /**
-         * 将HTTP头信息赋值给$_SERVER超全局变量
-         */
+        //将HTTP头信息赋值给$_SERVER超全局变量
         foreach ($request->head as $key => $value) {
             $_key = 'HTTP_' . strtoupper(str_replace('-', '_', $key));
             $_SERVER[$_key] = $value;
         }
+        //$_SERVER['REMOTE_ADDR'] = $request->server['remote_addr'];
         $_SERVER['REMOTE_ADDR'] = $request->remote_ip;
+
+        // swoole fix 初始化一些变量, 下面这些变量在进入真实流程时是无效的
+        $_SERVER['PHP_SELF']        = '/index.php';
+        $_SERVER['SCRIPT_NAME']     = '/index.php';
+        $_SERVER['SCRIPT_FILENAME'] = '/index.php';
+        $_SERVER['SERVER_ADDR']     = '127.0.0.1';
+        $_SERVER['SERVER_NAME']     = 'localhost';
+        //$_SERVER['DOCUMENT_ROOT']   = '';
+        //$_SERVER['DOCUMENT_URI']    = '';
+
+        //TODO
+        //$_SESSION = $this->load($sessid);
     }
 
 
