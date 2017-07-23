@@ -28,6 +28,7 @@ function getConf() {
             'host' => '0.0.0.0',
             'port' => 6666,
         ],
+        'pid_dir' => '/tmp',
 
         //服务配置
         'server_conf' => [

@@ -448,4 +448,15 @@ class SwooleServer extends LkkService{
     }
 
 
+
+    public static function checkServerStatus() {}
+    public static function cliStatus() {}
+    public static function cliStart() {}
+    public static function cliStop() {}
+    public static function cliRestart() {}
+    public static function cliReload() {}
+
+
+
+
 }
