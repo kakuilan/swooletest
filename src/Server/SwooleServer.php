@@ -82,6 +82,13 @@ class SwooleServer extends LkkService{
      * @return $this
      */
     public function initServer() {
+        //检查是否已安装swoole和phalcon
+        if(!extension_loaded('swoole')) {
+            throw new \Exception("no swoole extension!");
+        }elseif (!extension_loaded('phalcon')) {
+            throw new \Exception("no phalcon extension!");
+        }
+
         $httpCnf = $this->conf['http_server'];
         $this->server = new \swoole_http_server($httpCnf['host'], $httpCnf['port']);
 
@@ -179,6 +186,9 @@ class SwooleServer extends LkkService{
         //TODO
         $modName = php_sapi_name();
         echo "onRequest:{$modName}\r\n";
+
+        //注册捕获错误函数
+        register_shutdown_function('SwooleServer::handleRequestFatal', $request);
 
         if ($request->server['request_uri'] == '/favicon.ico' || $request->server['path_info'] == '/favicon.ico') {
             return $response->end();
@@ -449,12 +459,71 @@ class SwooleServer extends LkkService{
 
 
 
-    public static function checkServerStatus() {}
-    public static function cliStatus() {}
-    public static function cliStart() {}
-    public static function cliStop() {}
-    public static function cliRestart() {}
-    public static function cliReload() {}
+    public static function checkServerStatus() {
+
+    }
+
+    public static function cliStatus() {
+
+    }
+
+    public static function cliStart() {
+
+    }
+
+    public static function cliStop() {
+
+    }
+
+    public static function cliRestart() {
+
+    }
+
+    public static function cliReload() {
+
+    }
+
+
+    private static function handleRequestFatal($request) {
+        $error = error_get_last();
+        if (isset($error['type'])) {
+            switch ($error['type']) {
+                case E_ERROR:
+                case E_PARSE:
+                case E_CORE_ERROR:
+                case E_COMPILE_ERROR:
+                    $message = $error['message'];
+                    $file    = $error['file'];
+                    $line    = $error['line'];
+                    $log     = "$message ($file:$line)\nStack trace:\n";
+                    $trace   = debug_backtrace();
+                    foreach ($trace as $i => $t) {
+                        if (!isset($t['file'])) {
+                            $t['file'] = 'unknown';
+                        }
+                        if (!isset($t['line'])) {
+                            $t['line'] = 0;
+                        }
+                        if (!isset($t['function'])) {
+                            $t['function'] = 'unknown';
+                        }
+                        $log .= "#$i {$t['file']}({$t['line']}): ";
+                        if (isset($t['object']) and is_object($t['object'])) {
+                            $log .= get_class($t['object']) . '->';
+                        }
+                        $log .= "{$t['function']}()\n";
+                    }
+                    if (isset($_SERVER['REQUEST_URI'])) {
+                        $log .= '[QUERY] ' . $_SERVER['REQUEST_URI'];
+                    }
+
+                    $request->end($log);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
 
 
