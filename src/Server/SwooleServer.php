@@ -19,6 +19,8 @@ class SwooleServer extends LkkService{
     private $server;
     private $events;
     private $requests;
+    private $splqueue; //标准库队列,非持久化工作
+    private $redqueue; //redis持久化队列
 
 
     /**
