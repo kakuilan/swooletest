@@ -44,6 +44,28 @@ class SwooleServer extends LkkService{
     }
 
 
+    private function setSplQueue() {
+        $this->splqueue = new \SplQueue();
+        //设置迭代后数据删除
+        $this->splqueue->setIteratorMode(\SplDoublyLinkedList::IT_MODE_FIFO | \SplDoublyLinkedList::IT_MODE_DELETE);
+    }
+
+
+    public static function getSplQueue() {
+        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->splqueue;
+    }
+
+
+    private function setRedQueue() {
+        //TODO
+    }
+
+
+    public static function getRedQueue() {
+        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->redqueue;
+    }
+
+
     private function setSwooleRequest($request) {
         $reqUuid = self::getRequestUuid();
         $this->requests[$reqUuid] = $request;
@@ -124,6 +146,9 @@ class SwooleServer extends LkkService{
         if($extEvent) {
             call_user_func_array($extEvent['func'], $extEvent['parm']);
         }
+
+        $this->setSplQueue();
+        $this->setRedQueue();
 
         return $this;
     }
