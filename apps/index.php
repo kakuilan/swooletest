@@ -22,13 +22,15 @@ $loader->addPsr4('Apps\\', APPSDIR);
 function getConf() {
     return [
         'server_name' => 'Kserver',
+        'server_vers' => '0.0.1',
+        'pid_dir' => '/tmp',
 
         //http服务监听
         'http_server' => [
             'host' => '0.0.0.0',
             'port' => 6666,
         ],
-        'pid_dir' => '/tmp',
+
 
         //服务配置
         'server_conf' => [
