@@ -11,17 +11,33 @@
 namespace Kswoole\Server;
 
 use \Lkk\LkkService;
+use \JJG\Ping;
 
-
-class SwooleServer extends LkkService{
+class SwooleServer extends LkkService {
 
     public $conf;
     private $server;
     private $events;
-    private $requests;
+    private $requests; //请求资源
     private $splqueue; //标准库队列,非持久化工作
     private $redqueue; //redis持久化队列
 
+    private $servName; //服务名
+    private $listenIP; //监听IP
+    private $listenPort; //监听端口
+
+    //命令行操作列表
+    public static $cliOperations = [
+        'status',
+        'start',
+        'stop',
+        'restart',
+        'reload',
+        'kill',
+    ];
+    private static $cliOperate; //当前命令操作
+    private static $daemonize; //是否以守护进程启动
+    private static $pidFile;   //pid文件
 
     /**
      * 构造函数
@@ -32,7 +48,6 @@ class SwooleServer extends LkkService{
         parent::__construct($vars);
 
     }
-
 
 
     /**
@@ -67,27 +82,55 @@ class SwooleServer extends LkkService{
 
 
     private function setSwooleRequest($request) {
-        $reqUuid = self::getRequestUuid();
-        $this->requests[$reqUuid] = $request;
+        $requestId = self::getRequestUuid();
+        $this->requests[$requestId] = $request;
     }
 
 
-    private function unsetSwooleRequest($reqUuid='') {
-        if(empty($reqUuid)) $reqUuid = self::getRequestUuid();
-        unset($this->requests[$reqUuid]);
+    private function unsetSwooleRequest($requestId='') {
+        if(empty($requestId)) $requestId = self::getRequestUuid();
+        unset($this->requests[$requestId]);
     }
 
 
-    public static function getSwooleRequest($reqUuid='') {
+    public static function getSwooleRequest($requestId='') {
         $res = null;
         if(is_object(self::$instance) && !empty(self::$instance)) {
-            if(empty($reqUuid)) $reqUuid = self::getRequestUuid();
-            $res = isset(self::$instance->requests[$reqUuid]) ? self::$instance->requests[$reqUuid] : null;
+            if(empty($requestId)) $requestId = self::getRequestUuid();
+            $res = isset(self::$instance->requests[$requestId]) ? self::$instance->requests[$requestId] : null;
         }
 
         return $res;
     }
 
+
+    //用法
+    public static function cliUsage() {
+        $operates = implode(' | ', self::$cliOperations);
+        echo "usage:\r\nphp app/index.php {$operates} [-d]\r\n";
+    }
+
+
+    //解析CLI命令参数
+    public static function parseCommands() {
+        //销毁旧对象
+        self::destroy();
+
+        global $argv;
+        self::$cliOperate = isset($argv[1]) ? strtolower($argv[1]) : '';
+        self::$daemonize = (isset($argv[2]) && '-d'==strtolower($argv[2])) ? 1 : 0;
+
+        if(!in_array(self::$cliOperate, self::$cliOperations)) {
+            self::cliUsage();
+            exit(1);
+        }
+    }
+
+
+
+    public static function getDaemonize() {
+        return intval(self::$daemonize);
+    }
 
 
     /**
@@ -96,13 +139,191 @@ class SwooleServer extends LkkService{
      */
     public function setConf(array $conf) {
         $this->conf = $conf;
+        $this->servName = $this->conf['server_name'];
+        $this->listenIP = $this->conf['http_server']['host'];
+        $this->listenPort = $this->conf['http_server']['port'];
+
+        self::$pidFile = self::getPidPath($conf);
+
         return $this;
+    }
+
+
+    //检查扩展
+    public static function checkExtensions() {
+        $res = true;
+        //检查是否已安装swoole和phalcon
+        if(!extension_loaded('swoole')) {
+            print_r("no swoole extension!\n");
+            $res = false;
+        }elseif (!extension_loaded('phalcon')) {
+            print_r("no phalcon extension!\n");
+            $res = false;
+        }elseif (!extension_loaded('redis')) {
+            print_r("no redis extension!\n");
+            $res = false;
+        }elseif (!extension_loaded('pdo')) {
+            print_r("no pdo extension!\n");
+            $res = false;
+        }elseif (!class_exists('swoole_redis')) {
+            print_r("Swoole compilation is missing --enable-async-redis!\n");
+            $res = false;
+        }
+
+        return $res;
+    }
+
+
+    //执行
+    public function run() {
+        $chkExts = self::checkExtensions();
+        if(!$chkExts) exit(1);
+
+        $pidExis = file_exists(self::$pidFile);
+        $masterIsAlive = false;
+        $masterPid = $managerPid = 0;
+        if($pidExis) {
+            $pids = explode(',', file_get_contents(self::$pidFile));
+            $masterPid = $pids[0];
+            $managerPid = $pids[1];
+            $masterIsAlive = $masterPid && @posix_kill($masterPid, 0);
+        }
+
+        //$binded  = checkPortBindable('127.0.0.1', $this->listenPort);
+        $ping = new Ping('127.0.0.1');
+        $ping->setPort($this->listenPort);
+        $binded = $ping->ping();
+
+        $msg = '';
+        switch (self::$cliOperate) {
+            case 'status' : //查看服务状态
+                if($masterPid) {
+                    $msg .= "Service $this->servName is running...\r\n";
+                }else{
+                    $msg .= "Service $this->servName not running!!!\r\n";
+                }
+
+                if($binded) {
+                    $msg .= "Port $this->listenPort is binded...\r\n";
+                }else{
+                    $msg .= "Port $this->listenPort not binded!!!\r\n";
+                }
+
+                echo $msg;
+                break;
+            case 'start' :
+                if($masterPid) {
+                    $msg .= "Service $this->servName already running...\r\n";
+                    echo $msg;
+                    exit(1);
+                }elseif ($binded) {
+                    $msg .= "Port $this->listenPort already binded...\r\n";
+                    echo $msg;
+                    exit(1);
+                }
+
+                $this->initServer();
+
+                break;
+            case 'stop' :
+                if(!$binded) {
+                    $msg = "Service $this->servName not running!!!\r\n";
+                    echo $msg;
+                    exit(1);
+                }
+
+                @unlink(self::$pidFile);
+                echo("Service $this->servName is stoping ...\r\n");
+                $masterPid && posix_kill($masterPid, SIGTERM);
+                $timeout = 5;
+                $startTime = time();
+                while (1) {
+                    $masterIsAlive = $masterPid && posix_kill($masterPid, 0);
+                    if ($masterIsAlive) {
+                        if (time() - $startTime >= $timeout) {
+                            echo("Service $this->servName stop fail\r\n");
+                            exit;
+                        }
+                        // Waiting amoment.
+                        usleep(10000);
+                        continue;
+                    }
+                    echo("Service $this->servName stop success\r\n");
+                    break;
+                }
+                exit(0);
+                break;
+            case 'restart' :
+                @unlink(self::$pidFile);
+                echo("Service $this->servName is stoping ...\r\n");
+                $masterPid && posix_kill($masterPid, SIGTERM);
+                $timeout = 5;
+                $startTime = time();
+                while (1) {
+                    $masterIsAlive = $masterPid && posix_kill($masterPid, 0);
+                    if ($masterIsAlive) {
+                        if (time() - $startTime >= $timeout) {
+                            echo("Service $this->servName stop fail\r\n");
+                            exit;
+                        }
+                        // Waiting amoment.
+                        usleep(10000);
+                        continue;
+                    }
+                    echo("Service $this->servName stop success\r\n");
+                    break;
+                }
+
+                self::$daemonize = true;
+                $this->initServer();
+
+                break;
+            case 'reload' :
+                posix_kill($managerPid, SIGUSR1);
+                echo("Service $this->servName reload\r\n");
+                exit(0);
+                break;
+            case 'kill' :
+                $bash = "ps -ef|grep {$this->servName}|grep -v grep|cut -c 9-15|xargs kill -9";
+                exec($bash);
+                break;
+            default :
+                self::cliUsage();
+                exit(1);
+                break;
+        }
+
+        return $this;
+    }
+
+
+    //设置进程标题
+    public static function setProcessTitle($title) {
+        // >=php 5.5
+        if (function_exists('cli_set_process_title')) {
+            @cli_set_process_title($title);
+        } // Need proctitle when php<=5.5 .
+        else {
+            @swoole_set_process_name($title);
+        }
+    }
+
+
+
+    //获取PID文件路径
+    public static function getPidPath($conf) {
+        $res = '';
+        if(empty($conf)) return $res;
+
+        $fileName = strtolower($conf['server_name']) .'-'. $conf['http_server']['host'] .'-'. $conf['http_server']['port'] .'.pid';
+        $res = trim(str_replace('\\', '/', $conf['pid_dir']), '/') . DS . $fileName;
+        return $res;
     }
 
 
 
     /**
-     * 初始化
+     * 初始化服务
      * @return $this
      */
     public function initServer() {
@@ -117,7 +338,9 @@ class SwooleServer extends LkkService{
         $this->server = new \swoole_http_server($httpCnf['host'], $httpCnf['port']);
 
         $servCnf = $this->conf['server_conf'];
+        $servCnf['daemonize'] = self::getDaemonize();
         $this->server->set($servCnf);
+
         return $this;
     }
 
@@ -225,9 +448,9 @@ class SwooleServer extends LkkService{
 
         $this->setGlobal($request);
 
-        $requestMd5 = self::getRequestUuid();
-        $GLOBALS[$requestMd5] = microtime(true);
-        var_dump($requestMd5, $request);
+        $requestId = self::getRequestUuid();
+        $GLOBALS[$requestId] = microtime(true);
+        var_dump($requestId, $request);
 
 
         //var_dump($request);
@@ -243,7 +466,7 @@ class SwooleServer extends LkkService{
         }
 
         $response->end('hello world');
-        unset($GLOBALS[$requestMd5]);
+        unset($GLOBALS[$requestId]);
     }
 
 
@@ -251,7 +474,9 @@ class SwooleServer extends LkkService{
     public static function getRequestUuid() {
         $arr = array_merge($_GET, $_COOKIE, $_SERVER);
         sort($arr);
-        $res = time() . crc32(md5(serialize($arr)) . uniqid(true) . mt_rand(1, 10000000));
+        $res = isset($_SERVER['REQUEST_TIME_FLOAT']) ?
+            (sprintf('%.0f', $_SERVER['REQUEST_TIME_FLOAT'] * 1000000) .crc32(md5(serialize($arr))))
+            : md5(serialize($arr));
         return $res;
     }
 

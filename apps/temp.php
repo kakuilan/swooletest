@@ -345,3 +345,47 @@ function getMillisecond() {
     return (float)sprintf('%.0f', (floatval($t1) + floatval($t2)) * 1000);
 }
 
+
+/**
+ * 获取当前服务器ip
+ * @return string
+ */
+function getLocalIp() {
+    static $currentIP;
+
+    if ($currentIP == null) {
+        $serverIps = \swoole_get_local_ip();
+        $patternArray = array(
+            '10\.',
+            '172\.1[6-9]\.',
+            '172\.2[0-9]\.',
+            '172\.31\.',
+            '192\.168\.'
+        );
+        foreach ($serverIps as $serverIp) {
+            // 匹配内网IP
+            if (preg_match('#^' . implode('|', $patternArray) . '#', $serverIp)) {
+                $currentIP = $serverIp;
+                return $currentIP;
+            }
+        }
+    }
+
+    return $currentIP;
+}
+
+
+
+/**
+ * 检查端口是否可以被绑定
+ */
+function checkPortBindable($hostname = '127.0.0.1', $port = 80, $timeout = 5) {
+    $res = false; //端口未绑定
+    $fp	= @fsockopen($hostname, $port, $errno, $errstr, $timeout);
+    if($errno == 0 && $fp!=false){
+        fclose($fp);
+        $res = true; //端口已绑定
+    }
+
+    return $res;
+}

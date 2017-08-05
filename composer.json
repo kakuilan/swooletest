@@ -13,7 +13,8 @@
   ],
   "require": {
     "monolog/monolog": "^1.22",
-    "phpunit/phpunit": "^6.1"
+    "phpunit/phpunit": "^6.1",
+    "geerlingguy/ping": "^1.1"
   },
   "require-dev": {
     "kakuilan/kphplib": "dev-master"

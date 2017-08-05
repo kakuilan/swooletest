@@ -24,7 +24,7 @@ function getConf() {
     return [
         'server_name' => 'Kserver',
         'server_vers' => '0.0.1',
-        'pid_dir' => '/tmp',
+        'pid_dir' => '/tmp/',
 
         //http服务监听
         'http_server' => [
@@ -88,8 +88,9 @@ function getConf() {
 
 $conf = getConf();
 
-\Kswoole\Server\SwooleServer::destroy();
-$serverService = \Kswoole\Server\SwooleServer::instance();
+\Kswoole\Server\SwooleServer::parseCommands();
+\Kswoole\Server\SwooleServer::instance()->setConf($conf)->run();
+/*$serverService = \Kswoole\Server\SwooleServer::instance();
 $serverService->setConf($conf)->initServer()->addEvent('onStart', function ($name, $age){
     echo "outside event : {$name}-{$age}\r\n";
-}, ['name'=>'lkk','age'=>18])->startServer();
+}, ['name'=>'lkk','age'=>18])->startServer();*/
