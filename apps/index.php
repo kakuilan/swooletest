@@ -26,6 +26,9 @@ function getConf() {
         'server_vers' => '0.0.1',
         'pid_dir' => '/tmp/',
 
+        //是否热更新服务代码,需inotify扩展
+        'server_reload' => false,
+
         //http服务监听
         'http_server' => [
             'host' => '0.0.0.0',

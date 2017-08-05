@@ -144,6 +144,7 @@ class SwooleServer extends LkkService {
         $this->listenPort = $this->conf['http_server']['port'];
 
         self::$pidFile = self::getPidPath($conf);
+        var_dump('pid:', self::$pidFile);
 
         return $this;
     }
@@ -158,6 +159,9 @@ class SwooleServer extends LkkService {
             $res = false;
         }elseif (!extension_loaded('phalcon')) {
             print_r("no phalcon extension!\n");
+            $res = false;
+        }elseif (!extension_loaded('inotify')) {
+            print_r("no inotify extension!\n");
             $res = false;
         }elseif (!extension_loaded('redis')) {
             print_r("no redis extension!\n");
@@ -362,6 +366,7 @@ class SwooleServer extends LkkService {
      */
     public function onStart($serv) {
         self::setProcessTitle($this->servName.'-Master');
+        self::setMasterPid($serv->master_pid, $serv->manager_pid);
 
         //TODO
         $modName = php_sapi_name();
@@ -426,6 +431,7 @@ class SwooleServer extends LkkService {
 
     public function onWorkerStart($serv, $workerId) {
         self::setProcessTitle($this->servName.'-Worker');
+        self::setWorketPid($serv->worker_pid);
 
         //TODO
         echo "WorkerStart:{$workerId}\r\n";
