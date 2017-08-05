@@ -222,7 +222,7 @@ class SwooleServer extends LkkService {
                     exit(1);
                 }
 
-                $this->initServer();
+                $this->initServer()->startServer();
 
                 break;
             case 'stop' :
@@ -275,7 +275,7 @@ class SwooleServer extends LkkService {
                 }
 
                 self::$daemonize = true;
-                $this->initServer();
+                $this->initServer()->startServer();
 
                 break;
             case 'reload' :
