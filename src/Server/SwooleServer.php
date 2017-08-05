@@ -251,7 +251,7 @@ class SwooleServer extends LkkService{
     public static function getRequestUuid() {
         $arr = array_merge($_GET, $_COOKIE, $_SERVER);
         sort($arr);
-        $res = time() . crc32(md5(serialize($arr) . uniqid()) . rand(1, 10000000));
+        $res = time() . crc32(md5(serialize($arr)) . uniqid(true) . mt_rand(1, 10000000));
         return $res;
     }
 
