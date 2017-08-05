@@ -361,9 +361,11 @@ class SwooleServer extends LkkService {
      * 当启动时
      */
     public function onStart($serv) {
+        self::setProcessTitle($this->servName.'-Master');
+
         //TODO
         $modName = php_sapi_name();
-        echo "Start:{$modName}\r\n";
+        echo "Master Start:{$modName}\r\n";
 
         $extEvent = $this->getExtEvent(__FUNCTION__);
         if($extEvent) {
@@ -382,7 +384,7 @@ class SwooleServer extends LkkService {
      */
     public function onShutdown($serv) {
         //TODO
-        echo "Shutdown\r\n";
+        echo "Master Shutdown\r\n";
 
         $extEvent = $this->getExtEvent(__FUNCTION__);
         if($extEvent) {
@@ -393,7 +395,38 @@ class SwooleServer extends LkkService {
     }
 
 
+
+    public function onManagerStart($serv) {
+        self::setProcessTitle($this->servName.'-Manager');
+
+        //TODO
+        echo "Manager Start\r\n";
+
+        $extEvent = $this->getExtEvent(__FUNCTION__);
+        if($extEvent) {
+            call_user_func_array($extEvent['func'], $extEvent['parm']);
+        }
+
+    }
+
+
+
+    public function onManagerStop($serv) {
+        //TODO
+        echo "Manager Stop\r\n";
+
+        $extEvent = $this->getExtEvent(__FUNCTION__);
+        if($extEvent) {
+            call_user_func_array($extEvent['func'], $extEvent['parm']);
+        }
+
+    }
+
+
+
     public function onWorkerStart($serv, $workerId) {
+        self::setProcessTitle($this->servName.'-Worker');
+
         //TODO
         echo "WorkerStart:{$workerId}\r\n";
 
@@ -503,6 +536,8 @@ class SwooleServer extends LkkService {
 
 
     public function onTask($serv, $taskId, $fromId, $data) {
+        self::setProcessTitle($this->servName.'-Tasker');
+
         //TODO
         echo "onTask\r\n";
 
@@ -556,33 +591,6 @@ class SwooleServer extends LkkService {
 
 
 
-    public function onManagerStart($serv) {
-        //TODO
-        echo "onManagerStart\r\n";
-
-        $extEvent = $this->getExtEvent(__FUNCTION__);
-        if($extEvent) {
-            call_user_func_array($extEvent['func'], $extEvent['parm']);
-        }
-
-        return $this;
-    }
-
-
-
-    public function onManagerStop($serv) {
-        //TODO
-        echo "onManagerStop\r\n";
-
-        $extEvent = $this->getExtEvent(__FUNCTION__);
-        if($extEvent) {
-            call_user_func_array($extEvent['func'], $extEvent['parm']);
-        }
-
-        return $this;
-    }
-
-
     /**
      * 添加事件
      * @param string $eventName 事件名称
@@ -626,7 +634,6 @@ class SwooleServer extends LkkService {
 
     //启动服务
     public function startServer() {
-        self::setProcessTitle($this->servName.'-Master');
         $this->bindEvents();
         $this->server->start();
 
@@ -653,10 +660,6 @@ class SwooleServer extends LkkService {
         $this->server->reload();
         return $this;
     }
-
-
-
-
 
 
     /**
@@ -711,32 +714,6 @@ class SwooleServer extends LkkService {
     }
 
 
-
-    public static function checkServerStatus() {
-
-    }
-
-    public static function cliStatus() {
-
-    }
-
-    public static function cliStart() {
-
-    }
-
-    public static function cliStop() {
-
-    }
-
-    public static function cliRestart() {
-
-    }
-
-    public static function cliReload() {
-
-    }
-
-
     private static function handleRequestFatal() {
         $error = error_get_last();
         if (isset($error['type'])) {
@@ -778,6 +755,15 @@ class SwooleServer extends LkkService {
     }
 
 
+    public static function setMasterPid($masterPid, $managerPid) {
+        file_put_contents(self::$pidFile, $masterPid);
+        file_put_contents(self::$pidFile, ',' . $managerPid, FILE_APPEND);
+    }
+
+
+    public static function setWorketPid($workerPid) {
+        file_put_contents(self::$pidFile, ',' . $workerPid, FILE_APPEND);
+    }
 
 
 }
