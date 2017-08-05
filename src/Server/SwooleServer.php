@@ -197,6 +197,7 @@ class SwooleServer extends LkkService {
         $ping = new Ping('127.0.0.1');
         $ping->setPort($this->listenPort);
         $binded = $ping->ping('fsockopen');
+        var_dump('$binded', $binded);
 
         $msg = '';
         switch (self::$cliOperate) {
