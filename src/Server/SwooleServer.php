@@ -626,6 +626,7 @@ class SwooleServer extends LkkService {
 
     //启动服务
     public function startServer() {
+        self::setProcessTitle($this->servName);
         $this->bindEvents();
         $this->server->start();
 
