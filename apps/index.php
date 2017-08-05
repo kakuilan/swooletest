@@ -9,6 +9,7 @@
 
 require __DIR__ . '/define.php';
 require __DIR__ . '/errlog.php';
+require __DIR__ . '/temp.php';
 
 //载入命名空间
 $loader = require __DIR__ . '/../vendor/autoload.php';

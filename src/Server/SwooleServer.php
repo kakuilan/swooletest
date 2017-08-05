@@ -215,7 +215,7 @@ class SwooleServer extends LkkService{
         echo "onRequest:{$modName}\r\n";
 
         //注册捕获错误函数
-        register_shutdown_function('SwooleServer::handleRequestFatal', $request);
+        register_shutdown_function('Kswoole\Server\SwooleServer::handleRequestFatal');
 
         if ($request->server['request_uri'] == '/favicon.ico' || $request->server['path_info'] == '/favicon.ico') {
             return $response->end();
@@ -251,7 +251,7 @@ class SwooleServer extends LkkService{
     public static function getRequestUuid() {
         $arr = array_merge($_GET, $_COOKIE, $_SERVER);
         sort($arr);
-        $res = md5(serialize($arr));
+        $res = time() . crc32(md5(serialize($arr) . uniqid()) . rand(1, 10000000));
         return $res;
     }
 
@@ -511,7 +511,7 @@ class SwooleServer extends LkkService{
     }
 
 
-    private static function handleRequestFatal($request) {
+    private static function handleRequestFatal() {
         $error = error_get_last();
         if (isset($error['type'])) {
             switch ($error['type']) {
@@ -544,7 +544,6 @@ class SwooleServer extends LkkService{
                         $log .= '[QUERY] ' . $_SERVER['REQUEST_URI'];
                     }
 
-                    $request->end($log);
                     break;
                 default:
                     break;
