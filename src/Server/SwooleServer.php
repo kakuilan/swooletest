@@ -320,7 +320,7 @@ class SwooleServer extends LkkService {
         if(empty($conf)) return $res;
 
         $fileName = strtolower($conf['server_name']) .'-'. $conf['http_server']['host'] .'-'. $conf['http_server']['port'] .'.pid';
-        $res = trim(str_replace('\\', '/', $conf['pid_dir']), '/') . DS . $fileName;
+        $res = rtrim(str_replace('\\', '/', $conf['pid_dir']), '/') . DS . $fileName;
         return $res;
     }
 
