@@ -13,7 +13,13 @@ namespace Kswoole\Server;
 use \Lkk\LkkService;
 use \Lkk\Helpers\ValidateHelper;
 use \JJG\Ping;
-use \Phalcon\Mvc\Micro;
+use Phalcon\Di;
+use Phalcon\Loader;
+use Phalcon\Mvc\Application;
+use Phalcon\Mvc\View;
+use Phalcon\Mvc\Router;
+use Phalcon\Http\Request;
+use Phalcon\Http\Response;
 
 class SwooleServer extends LkkService {
 
@@ -511,28 +517,29 @@ class SwooleServer extends LkkService {
         //处理请求
         ob_start();
         try {
-            $app = new Micro();
-            $app->get(
-                "/",
-                function () {
-                    echo "<h1>Phalcon and Swoole Welcome!</h1>";
-                }
+            $loader = new Loader();
+            $loader->registerDirs(
+                [
+                    ROOTDIR . 'phalcon' .DS
+                ]
             );
-            $app->get(
-                "/index",
-                function () use ($app) {
-                    echo "<h1>Hello world !</h1>";
-                    echo "Your IP Address is ", $app->request->getClientAddress();
-                }
-            );
-            $app->notFound(
-                function () use ($app) {
-                    $app->response->setStatusCode(404, "Not Found");
-                    $app->response->sendHeaders();
-                    echo "This is crazy, but this page was not found!";
-                }
-            );
+            $loader->register();
 
+            $di = new Di();
+
+            // Registering a router
+            $di->set("router", Router::class);
+
+            // Registering a dispatcher
+            $di->set("dispatcher", MvcDispatcher::class);
+
+            // Registering a Http\Response
+            $di->set("response", Response::class);
+
+            // Registering a Http\Request
+            $di->set("request", Request::class);
+
+            $app = new Application($di);
             echo $app->handle($request->server['request_uri'])->getContent();
         } catch (\Exception $e) {
             echo $e->getMessage();
