@@ -193,10 +193,10 @@ class SwooleServer extends LkkService {
             $masterIsAlive = $masterPid && @posix_kill($masterPid, 0);
         }
 
-        //$binded  = checkPortBindable('127.0.0.1', $this->listenPort);
-        $ping = new Ping('127.0.0.1');
+        $binded  = isPortBinded('127.0.0.1', $this->listenPort);
+        /*$ping = new Ping('127.0.0.1');
         $ping->setPort($this->listenPort);
-        $binded = $ping->ping('fsockopen');
+        $binded = $ping->ping('fsockopen');*/
         var_dump('$binded', $binded);
 
         $msg = '';

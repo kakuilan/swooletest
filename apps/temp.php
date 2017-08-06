@@ -379,7 +379,7 @@ function getLocalIp() {
 /**
  * 检查端口是否可以被绑定
  */
-function checkPortBindable($hostname = '127.0.0.1', $port = 80, $timeout = 5) {
+function isPortBinded($hostname = '127.0.0.1', $port = 80, $timeout = 5) {
     $res = false; //端口未绑定
     $fp	= @fsockopen($hostname, $port, $errno, $errstr, $timeout);
     if($errno == 0 && $fp!=false){

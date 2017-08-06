@@ -15,16 +15,8 @@ require __DIR__ . '/temp.php';
 $loader = require __DIR__ . '/../vendor/autoload.php';
 $loader->addPsr4('Apps\\', APPSDIR);
 
-$ping = new \JJG\Ping('127.0.0.1');
-$ping->setPort(6666);
-$binded = $ping->ping('fsockopen');
+$binded = isPortBinded('127.0.0.1', 6666);
 var_dump('127.0.0.1:6666', $binded);
-
-$ping2 = new \JJG\Ping('192.168.128.130');
-$ping2->setPort(6666);
-$binded = $ping2->ping('fsockopen');
-var_dump('192.168.128.130:6666', $binded);
-
 
 /**
  * 获取配置
