@@ -13,6 +13,7 @@ namespace Kswoole\Server;
 use \Lkk\LkkService;
 use \Lkk\Helpers\ValidateHelper;
 use \JJG\Ping;
+use \Phalcon\Mvc\Micro;
 
 class SwooleServer extends LkkService {
 
@@ -507,7 +508,40 @@ class SwooleServer extends LkkService {
             var_dump('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', $date, $uniqid, $_POST);
         }
 
-        $response->end('hello world');
+        //处理请求
+        ob_start();
+        try {
+            $app = new Micro();
+            $app->get(
+                "/",
+                function () {
+                    echo "<h1>Phalcon and Swoole Welcome!</h1>";
+                }
+            );
+            $app->get(
+                "/index",
+                function () use ($app) {
+                    echo "<h1>Hello world !</h1>";
+                    echo "Your IP Address is ", $app->request->getClientAddress();
+                }
+            );
+            $app->notFound(
+                function () use ($app) {
+                    $app->response->setStatusCode(404, "Not Found");
+                    $app->response->sendHeaders();
+                    echo "This is crazy, but this page was not found!";
+                }
+            );
+
+            echo $app->handle($request->server['request_uri'])->getContent();
+        } catch (\Exception $e) {
+            echo $e->getMessage();
+        }
+        $result = ob_get_contents();
+        ob_end_clean();
+        $response->end($result);
+        //$response->end('hello world');
+
         unset($GLOBALS[$requestId]);
     }
 
