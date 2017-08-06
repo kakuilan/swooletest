@@ -552,6 +552,7 @@ class SwooleServer extends LkkService {
 
             $app = new Application($di);
             //$resStr = 'Hello World';
+            //TODO Allowed memory错误
             $resStr = $app->handle($request->server['request_uri'])->getContent();
         } catch (\Exception $e) {
             $resStr = $e->getMessage();
