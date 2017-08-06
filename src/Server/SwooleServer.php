@@ -488,7 +488,7 @@ class SwooleServer extends LkkService {
         echo "onRequest:{$modName}\r\n";
 
         //注册捕获错误函数
-        register_shutdown_function('Kswoole\Server\SwooleServer::handleRequestFatal');
+        register_shutdown_function('\Kswoole\Server\SwooleServer::handleRequestFatal');
 
         if ($request->server['request_uri'] == '/favicon.ico' || $request->server['path_info'] == '/favicon.ico') {
             return $response->end();
@@ -777,7 +777,7 @@ class SwooleServer extends LkkService {
     }
 
 
-    private static function handleRequestFatal() {
+    public static function handleRequestFatal() {
         $error = error_get_last();
         if (isset($error['type'])) {
             switch ($error['type']) {

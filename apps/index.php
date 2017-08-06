@@ -15,9 +15,10 @@ require __DIR__ . '/temp.php';
 $loader = require __DIR__ . '/../vendor/autoload.php';
 $loader->addPsr4('Apps\\', APPSDIR);
 
+if (php_sapi_name() != "cli") {
+    exit("only run in command line mode \r\n");
+}
 
-$binded = isPortBinded('127.0.0.1', 6666);
-var_dump('127.0.0.1:6666', $binded);
 
 /**
  * 获取配置
