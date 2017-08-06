@@ -14,8 +14,7 @@ class IndexController extends Controller
 {
     public function indexAction()
     {
-        $msg = 'Weclcom Phalcon Swoole!';
-        echo $msg;
+        $msg = 'Weclcom Phalcon Swoole! ' .date('Y-m-d H:i:s');
         return $msg;
     }
 
