@@ -539,6 +539,16 @@ class SwooleServer extends LkkService {
             // Registering a Http\Request
             $di->set("request", Request::class);
 
+            $di->set(
+                "view",
+                function () {
+                    $view = new View();
+                    $view->setRenderLevel(View::LEVEL_NO_RENDER);
+                    $view->disable();
+                    return $view;
+                }
+            );
+
             $app = new Application($di);
             echo $app->handle($request->server['request_uri'])->getContent();
         } catch (\Exception $e) {
