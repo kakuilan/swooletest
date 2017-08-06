@@ -516,7 +516,7 @@ class SwooleServer extends LkkService {
         }
 
         //处理请求
-        ob_start();
+        //ob_start();
         try {
             $loader = new Loader();
             $loader->registerDirs(
@@ -551,13 +551,13 @@ class SwooleServer extends LkkService {
             );
 
             $app = new Application($di);
-            echo $app->handle($request->server['request_uri'])->getContent();
+            $resStr = $app->handle($request->server['request_uri'])->getContent();
         } catch (\Exception $e) {
-            echo $e->getMessage();
+            $resStr = $e->getMessage();
         }
-        $result = ob_get_contents();
-        ob_end_clean();
-        $response->end($result);
+        //$result = ob_get_contents();
+        //ob_end_clean();
+        $response->end($resStr);
         //$response->end('hello world');
 
         unset($GLOBALS[$requestId]);
