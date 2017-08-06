@@ -551,7 +551,8 @@ class SwooleServer extends LkkService {
             );
 
             $app = new Application($di);
-            $resStr = 'Hello World';//$app->handle($request->server['request_uri'])->getContent();
+            //$resStr = 'Hello World';
+            $resStr = $app->handle($request->server['request_uri'])->getContent();
         } catch (\Exception $e) {
             $resStr = $e->getMessage();
         }
