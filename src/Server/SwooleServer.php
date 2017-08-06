@@ -20,6 +20,7 @@ use Phalcon\Mvc\View;
 use Phalcon\Mvc\Router;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
+use Phalcon\Mvc\Dispatcher as MvcDispatcher;
 
 class SwooleServer extends LkkService {
 
