@@ -520,7 +520,7 @@ class SwooleServer extends LkkService {
             $loader = new Loader();
             $loader->registerDirs(
                 [
-                    ROOTDIR . 'phalcon' .DS
+                    APPSDIR . 'controllers' .DS
                 ]
             );
             $loader->register();
@@ -531,7 +531,7 @@ class SwooleServer extends LkkService {
             $di->set("router", Router::class);
 
             // Registering a dispatcher
-            //$di->set("dispatcher", MvcDispatcher::class);
+            $di->set("dispatcher", MvcDispatcher::class);
 
             // Registering a Http\Response
             $di->set("response", Response::class);
