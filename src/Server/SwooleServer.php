@@ -202,7 +202,7 @@ class SwooleServer extends LkkService {
         $msg = '';
         switch (self::$cliOperate) {
             case 'status' : //查看服务状态
-                if($masterPid) {
+                if($masterIsAlive) {
                     $msg .= "Service $this->servName is running...\r\n";
                 }else{
                     $msg .= "Service $this->servName not running!!!\r\n";
@@ -217,7 +217,7 @@ class SwooleServer extends LkkService {
                 echo $msg;
                 break;
             case 'start' :
-                if($masterPid) {
+                if($masterIsAlive) {
                     $msg .= "Service $this->servName already running...\r\n";
                     echo $msg;
                     exit(1);
@@ -289,6 +289,7 @@ class SwooleServer extends LkkService {
                 exit(0);
                 break;
             case 'kill' :
+                @unlink(self::$pidFile);
                 $bash = "ps -ef|grep {$this->servName}|grep -v grep|cut -c 9-15|xargs kill -9";
                 exec($bash);
                 break;
@@ -643,6 +644,8 @@ class SwooleServer extends LkkService {
     public function startServer() {
         $this->bindEvents();
         $this->server->start();
+
+        echo("Service $this->servName stop success\r\n");
 
         return $this;
     }
