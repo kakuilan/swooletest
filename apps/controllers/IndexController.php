@@ -14,6 +14,8 @@ class IndexController extends Controller
 {
     public function indexAction()
     {
+        $this->view->setRenderLevel(\Phalcon\Mvc\View::LEVEL_ACTION_VIEW);
+        $this->view->disable();
         $msg = 'Weclcom Phalcon Swoole! ' .date('Y-m-d H:i:s');
         return $msg;
     }
