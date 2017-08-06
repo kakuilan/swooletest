@@ -11,6 +11,7 @@
 namespace Kswoole\Server;
 
 use \Lkk\LkkService;
+use \Lkk\Helpers\ValidateHelper;
 use \JJG\Ping;
 
 class SwooleServer extends LkkService {
@@ -193,7 +194,7 @@ class SwooleServer extends LkkService {
             $masterIsAlive = $masterPid && @posix_kill($masterPid, 0);
         }
 
-        $binded  = isPortBinded('127.0.0.1', $this->listenPort);
+        $binded  = ValidateHelper::isPortBinded('127.0.0.1', $this->listenPort);
         /*$ping = new Ping('127.0.0.1');
         $ping->setPort($this->listenPort);
         $binded = $ping->ping('fsockopen');*/
@@ -645,7 +646,7 @@ class SwooleServer extends LkkService {
         $this->bindEvents();
         $this->server->start();
 
-        echo("Service $this->servName stop success\r\n");
+        echo("Service $this->servName start success\r\n");
 
         return $this;
     }
