@@ -20,7 +20,8 @@ class TimerTask extends LkkService {
 
 
     public function dumpTest() {
-        $msg = "timer task callback:";
+        $time = getMillisecond();
+        $msg = "timer task callback: time[{$time}]\r\n";
         print_r($msg);
     }
 
