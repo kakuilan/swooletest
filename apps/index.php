@@ -90,6 +90,15 @@ function getConf() {
             'enable_reuse_port' => 1,
         ],
 
+        //定时任务
+        'timer_tasks' => [
+            [
+                'callback' => '',
+                'params' => [],
+            ],
+            [],
+        ],
+
     ];
 }
 

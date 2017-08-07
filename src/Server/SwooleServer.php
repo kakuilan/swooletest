@@ -597,8 +597,7 @@ class SwooleServer extends LkkService {
     }
 
 
-
-    public function onTask($serv, $taskId, $fromId, $data) {
+    public function onTask($serv, $taskId, $fromId, $taskData) {
         self::setProcessTitle($this->servName.'-Tasker');
 
         //TODO
@@ -829,6 +828,9 @@ class SwooleServer extends LkkService {
     public static function setWorketPid($workerPid) {
         file_put_contents(self::$pidFile, ',' . $workerPid, FILE_APPEND);
     }
+
+
+
 
 
 }
