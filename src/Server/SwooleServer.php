@@ -21,7 +21,7 @@ use Phalcon\Mvc\Router;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\Dispatcher as MvcDispatcher;
-use Kswoole\Server\TimerTask;
+use Kswoole\Server\TimerTaskManager;
 
 class SwooleServer extends LkkService {
 
@@ -35,6 +35,9 @@ class SwooleServer extends LkkService {
     private $servName; //服务名
     private $listenIP; //监听IP
     private $listenPort; //监听端口
+
+    //定时任务管理器
+    private $timerTaskManager;
 
     //命令行操作列表
     public static $cliOperations = [
@@ -66,6 +69,12 @@ class SwooleServer extends LkkService {
      */
     public static function getServer() {
         return (is_null(self::$instance) || !is_object(self::$instance)) ? null : self::$instance->server;
+    }
+
+
+    //获取定时任务管理器
+    public static function getTimerTaskManager() {
+        return (is_null(self::$instance) || !is_object(self::$instance)) ? null : self::$instance->timerTaskManager;
     }
 
 
@@ -448,9 +457,8 @@ class SwooleServer extends LkkService {
         //最后一个worker处理启动定时器
         if ($workerId == $this->conf['server_conf']['worker_num'] - 1) {
             //启动定时器任务
-            new TimerTask(['timerTasks'=>$this->conf['timer_tasks']]);
+            $this->timerTaskManager = new TimerTaskManager(['timerTasks'=>$this->conf['timer_tasks']]);
         }
-
 
         //TODO
         echo "WorkerStart:{$workerId}\r\n";
