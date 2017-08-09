@@ -65,7 +65,7 @@ class SwooleServer extends LkkService {
      * @return mixed
      */
     public static function getServer() {
-        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->server;
+        return (is_null(self::$instance) || !is_object(self::$instance)) ? null : self::$instance->server;
     }
 
 
@@ -77,7 +77,7 @@ class SwooleServer extends LkkService {
 
 
     public static function getSplQueue() {
-        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->splqueue;
+        return (is_null(self::$instance) || !is_object(self::$instance)) ? null : self::$instance->splqueue;
     }
 
 
@@ -87,7 +87,7 @@ class SwooleServer extends LkkService {
 
 
     public static function getRedQueue() {
-        return (is_null(self::$instance) || !is_array(self::$instance)) ? null : self::$instance->redqueue;
+        return (is_null(self::$instance) || !is_object(self::$instance)) ? null : self::$instance->redqueue;
     }
 
 
