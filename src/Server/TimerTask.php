@@ -33,7 +33,7 @@ class TimerTask extends LkkService {
         if(!empty($this->timerTasks)) {
             foreach ($this->timerTasks as $timerTask) {
                 if(!empty($timerTask)) {
-                    SwooleServer::instance()->server->task($timerTask);
+                    SwooleServer::getServer()->task($timerTask);
                 }
             }
         }
