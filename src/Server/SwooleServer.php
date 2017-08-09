@@ -21,6 +21,7 @@ use Phalcon\Mvc\Router;
 use Phalcon\Http\Request;
 use Phalcon\Http\Response;
 use Phalcon\Mvc\Dispatcher as MvcDispatcher;
+use Kswoole\Server\TimerTask;
 
 class SwooleServer extends LkkService {
 
@@ -444,6 +445,13 @@ class SwooleServer extends LkkService {
         self::setProcessTitle($this->servName.'-Worker');
         self::setWorketPid($serv->worker_pid);
 
+        //最后一个worker处理启动定时器
+        if ($workerId == $this->conf['server_conf']['worker_num'] - 1) {
+            //启动定时器任务
+            new TimerTask(['timerTasks'=>$this->conf['timer_tasks']]);
+        }
+
+
         //TODO
         echo "WorkerStart:{$workerId}\r\n";
 
@@ -603,6 +611,19 @@ class SwooleServer extends LkkService {
         //TODO
         echo "onTask\r\n";
 
+        //检查任务类型
+        if(is_array($taskData) && isset($taskData['type'])) {
+            switch ($taskData['type']) {
+                case '' :default :
+
+                    break;
+                case \Kswoole\Server\ServerConst::SERVER_TASK_TIMER : //定时任务
+                    call_user_func_array($taskData['message']['callback'], $taskData['message']['params']);
+                    break;
+            }
+        }
+
+
         $extEvent = $this->getExtEvent(__FUNCTION__);
         if($extEvent) {
             call_user_func_array($extEvent['func'], $extEvent['parm']);
@@ -612,7 +633,7 @@ class SwooleServer extends LkkService {
     }
 
 
-    public function onFinish($serv, $taskId, $data) {
+    public function onFinish($serv, $taskId, $taskData) {
         //TODO
         echo "onFinish\r\n";
 

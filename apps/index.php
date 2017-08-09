@@ -93,10 +93,13 @@ function getConf() {
         //定时任务
         'timer_tasks' => [
             [
-                'callback' => '',
-                'params' => [],
+                'type' => \Kswoole\Server\ServerConst::SERVER_TASK_TIMER,
+                'message' => [
+                    'title' => 'timerTest',
+                    'callback' => ['\Kswoole\Server\Task','dumpTest'],
+                    'params' => ['timerTest-hah'],
+                ]
             ],
-            [],
         ],
 
     ];
